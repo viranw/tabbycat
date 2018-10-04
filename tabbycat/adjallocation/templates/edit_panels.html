@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block page-subnav-sections %}{% endblock %}
+
+{% block content %}
+
+Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab LIPSUM
+
+{% endblock content %}
+
+{% block js %}
+  <script>
+    window.vueData = { };
+  </script>
+  {{ block.super }}
+{% endblock js %}

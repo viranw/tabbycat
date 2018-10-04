@@ -26,7 +26,8 @@ from .allocator import allocate_adjudicators
 from .conflicts import ConflictsInfo, HistoryInfo
 from .hungarian import ConsensusHungarianAllocator, VotingHungarianAllocator
 from .models import (AdjudicatorAdjudicatorConflict, AdjudicatorInstitutionConflict,
-                     AdjudicatorTeamConflict, DebateAdjudicator, TeamInstitutionConflict)
+                     AdjudicatorTeamConflict, DebateAdjudicator, PreformedPanel,
+                     TeamInstitutionConflict)
 
 from utils.misc import reverse_round
 
@@ -202,6 +203,24 @@ class SaveDebatePanel(BaseSaveDragAndDropDebateJsonView):
                     adj_name_lookup[adj_id], obj.get_type_display(), debate.matchup)
 
         return debate
+
+
+class EditPreformedPanelsView(TournamentMixin, AdministratorMixin, TemplateView):
+    page_title = gettext_lazy("Edit Preformed Panels")
+    page_emoji = '📦'
+    template_name = 'edit_panels.html'
+
+    def get_context_data(self, **kwargs):
+        t = self.tournament
+
+        panels = PreformedPanel.objects.all()
+        serialized_panels = [p.serialize(t) for p in panels]
+        kwargs['vuePreformedPanels'] = serialized_panels
+
+        unused_adjudicators = [] # TODO
+        serialized_unused = [a.serialize(t.current_round) for a in unused_adjudicators] # TODO: how to reconcile with availability?
+        kwargs['vueUnusedAdjudicators'] = json.dumps(serialized_unused)
+        return super().get_context_data(**kwargs)
 
 
 # ==============================================================================

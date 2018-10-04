@@ -122,6 +122,19 @@ class PreformedPanel(models.Model):
     def __str__(self):
         return "[{x.id}] {x.round.name} impt={x.importance}".format(x=self)
 
+    def serialize(self, tournament=None):
+        """For convenience we serialize as if it were a debate"""
+        if tournament is None:
+            tournament = self.round.tournament
+        round = tournament.current_round
+
+        panel = {'id': self.id, 'importance': self.importance}
+        panel['debateAdjudicators'] = [{
+            # 'position': position,
+            'adjudicator': panellist.adjudicator.serialize(round=round),
+        } for panellist, position in self.panel]
+        return panel
+
 
 class PreformedPanelAdjudicator(models.Model):
     panel = models.ForeignKey(PreformedPanel, models.CASCADE,

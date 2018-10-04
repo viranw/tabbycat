@@ -82,6 +82,10 @@
          data-parent="#rh{{ r.id }}">
         <span class="circle-icon small-circle"></span><i data-feather="link"></i>{% trans "Private URLs" %}
       </a>
+      <a href="{% tournamenturl 'preformed-panels' %}"
+         class="list-group-item" data-parent="#setuph">
+        <span class="circle-icon small-circle"></span><i data-feather="package"></i>{% trans "Preformed Panels" %}
+      </a>
       <a href="{% url 'admin:index' %}" target="_blank"
          class="list-group-item" data-parent="#setuph">
         <span class="circle-icon small-circle"></span><i data-feather="edit"></i>{% trans "Edit Database" %}
