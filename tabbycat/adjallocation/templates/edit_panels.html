@@ -1,16 +1,35 @@
-{% extends "base.html" %}
+{% extends "base_fullscreen.html" %}
 
+{% block nav %}{% endblock %}
+{% block header %}{% endblock %}
+{% block subheader %}{% endblock %}
+{% block footer %}{% endblock %}
 {% block page-subnav-sections %}{% endblock %}
+{% block body-class %}override-sidebar-offset{% endblock %}
 
 {% block content %}
 
-Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab LIPSUM
+<div id="vueMount">
+
+  <edit-adjudicators-container :initial-debates="debates"
+                               :round-info="roundInfo"
+                               :initial-unallocated-items="unallocatedItems"
+                               :default-sort-key="'bracket'"
+                               :default-sort-order="'desc'"
+                               :show-intro-modal="showIntroModal">
+  </edit-adjudicators-container>
+
+</div>
 
 {% endblock content %}
 
 {% block js %}
   <script>
-    window.vueData = { };
+    window.vueData = {
+      panels: {{ vuePreformedPanels|safe }},
+      roundInfo: {{ vueRoundInfo|safe }},
+      unallocatedItems: {{ vueUnusedAdjudicators|safe }},
+    }
   </script>
   {{ block.super }}
 {% endblock js %}

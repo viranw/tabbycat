@@ -16,6 +16,9 @@ urlpatterns = [
         path('panel/set/',
             views.SaveDebatePanel.as_view(),
             name='adjallocation-save-debate-panel'),
+        path('preformed/',
+            views.EditPreformedPanelsView.as_view(),
+            name='preformed-panels-edit'),
     ])),
     path('conflicts/', include([
         path('adjudicator-team/',
@@ -31,7 +34,4 @@ urlpatterns = [
             views.TeamInstitutionConflictsView.as_view(),
             name='adjallocation-conflicts-team-inst'),
     ])),
-    path('preformed/',
-        views.EditPreformedPanelsView.as_view(),
-        name='preformed-panels'),
 ]

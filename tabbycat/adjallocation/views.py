@@ -60,7 +60,8 @@ class AdjudicatorAllocationMixin(DrawForDragAndDropMixin, AdministratorMixin):
 
     def get_unallocated_adjudicators(self):
         round = self.round
-        unused_adj_instances = round.unused_adjudicators().select_related('institution__region')
+        # Note below unused call differentiates preformed vs draw panels
+        unused_adj_instances = self.get_unused_adjudicators(round)
         populate_feedback_scores(unused_adj_instances)
         unused_adjs = [a.serialize(round) for a in unused_adj_instances]
 
@@ -108,6 +109,9 @@ class EditAdjudicatorAllocationView(AdjudicatorAllocationMixin, TemplateView):
         for i, bc in enumerate(all_bcs):
             bc['class'] = i
         return all_bcs
+
+    def get_unused_adjudicators(self, r):
+        return r.unused_adjudicators().select_related('institution__region')
 
     def get_round_info(self):
         round_info = super().get_round_info()
@@ -205,10 +209,14 @@ class SaveDebatePanel(BaseSaveDragAndDropDebateJsonView):
         return debate
 
 
-class EditPreformedPanelsView(TournamentMixin, AdministratorMixin, TemplateView):
+class EditPreformedPanelsView(AdjudicatorAllocationMixin, TemplateView):
     page_title = gettext_lazy("Edit Preformed Panels")
     page_emoji = '📦'
     template_name = 'edit_panels.html'
+
+    def get_unused_adjudicators(self, r):
+        active_adjs = r.active_adjudicators.select_related('institution__region')
+        return active_adjs.exclude(preformedpaneladjudicator__panel__round=r)
 
     def get_context_data(self, **kwargs):
         t = self.tournament
@@ -217,9 +225,7 @@ class EditPreformedPanelsView(TournamentMixin, AdministratorMixin, TemplateView)
         serialized_panels = [p.serialize(t) for p in panels]
         kwargs['vuePreformedPanels'] = serialized_panels
 
-        unused_adjudicators = [] # TODO
-        serialized_unused = [a.serialize(t.current_round) for a in unused_adjudicators] # TODO: how to reconcile with availability?
-        kwargs['vueUnusedAdjudicators'] = json.dumps(serialized_unused)
+        kwargs['vueUnusedAdjudicators'] = self.get_unallocated_adjudicators()
         return super().get_context_data(**kwargs)
 
 
