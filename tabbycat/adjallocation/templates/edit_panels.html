@@ -1,23 +1,16 @@
 {% extends "base_fullscreen.html" %}
 
-{% block nav %}{% endblock %}
-{% block header %}{% endblock %}
-{% block subheader %}{% endblock %}
-{% block footer %}{% endblock %}
-{% block page-subnav-sections %}{% endblock %}
-{% block body-class %}override-sidebar-offset{% endblock %}
-
 {% block content %}
 
 <div id="vueMount">
 
-  <edit-adjudicators-container :initial-debates="debates"
-                               :round-info="roundInfo"
-                               :initial-unallocated-items="unallocatedItems"
-                               :default-sort-key="'bracket'"
-                               :default-sort-order="'desc'"
-                               :show-intro-modal="showIntroModal">
-  </edit-adjudicators-container>
+  <edit-panels-container :initial-debates="panels"
+                         :round-info="roundInfo"
+                         :initial-unallocated-items="unallocatedItems"
+                         :default-sort-key="'bracket'"
+                         :default-sort-order="'desc'"
+                         :show-intro-modal="showIntroModal">
+  </edit-panels-container>
 
 </div>
 
@@ -29,6 +22,7 @@
       panels: {{ vuePreformedPanels|safe }},
       roundInfo: {{ vueRoundInfo|safe }},
       unallocatedItems: {{ vueUnusedAdjudicators|safe }},
+      showIntroModal: false
     }
   </script>
   {{ block.super }}

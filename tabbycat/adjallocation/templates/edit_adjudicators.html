@@ -1,12 +1,5 @@
-{% extends "base.html" %}
+{% extends "base_fullscreen.html" %}
 {% load debate_tags i18n %}
-
-{% block nav %}{% endblock %}
-{% block header %}{% endblock %}
-{% block subheader %}{% endblock %}
-{% block footer %}{% endblock %}
-{% block page-subnav-sections %}{% endblock page-subnav-sections %}
-{% block body-class %}override-sidebar-offset{% endblock %}
 
 {% block page-title %}{% blocktrans trimmed with round_abbr=round.abbreviation %}
 Edit Adjudicators for {{ round_abbr }}

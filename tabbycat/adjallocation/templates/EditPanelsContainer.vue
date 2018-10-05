@@ -1,8 +1,8 @@
 <template>
   <div class="draw-container allocation-container">
 
-    <edit-adjudicators-actions :round-info="roundInfo" :sharding="sharding.enabled"
-                               :percentiles="percentileThresholds"></edit-adjudicators-actions>
+    <edit-panels-actions :round-info="roundInfo" :sharding="sharding.enabled"
+                         :percentiles="percentileThresholds"></edit-panels-actions>
 
     <div class="row">
       <div class="mt-3 col allocation-messages" id="messages-container"></div>
@@ -114,7 +114,7 @@ import DrawContainerMixin from '../../draw/templates/DrawContainerMixin.vue'
 import AdjudicatorMovingMixin from '../../templates/ajax/AdjudicatorMovingMixin.vue'
 import AutoImportanceLogicMixin from '../../templates/allocations/AutoImportanceLogicMixin.vue'
 import HighlightContainerMixin from '../../templates/allocations/HighlightContainerMixin.vue'
-import EditAdjudicatorsActions from './EditAdjudicatorsActions.vue'
+import EditPanelsActions from './EditPanelsActions.vue'
 import AllocationIntroModal from '../../templates/allocations/AllocationIntroModal.vue'
 import DebateImportance from '../../templates/allocations/DebateImportance.vue'
 import DebatePanel from '../../templates/allocations/DebatePanel.vue'
@@ -125,7 +125,7 @@ export default {
   mixins: [AjaxMixin, AdjudicatorMovingMixin, DrawContainerMixin,
     AutoImportanceLogicMixin, HighlightContainerMixin],
   components: {
-    EditAdjudicatorsActions,
+    EditPanelsActions,
     AllocationIntroModal,
     DebateImportance,
     DebatePanel,
