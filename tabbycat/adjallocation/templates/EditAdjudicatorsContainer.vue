@@ -40,7 +40,7 @@
                :class="['thead flex-cell text-center',
                         'flex-' + (adjPositions.length > 2 ? 17: 16)]">
             <div class="d-flex align-items-end">
-              <span>Panel</span>
+              <span>Panellists</span>
             </div>
           </div>
           <div v-if="adjPositions.indexOf('T') !== -1"

@@ -12,7 +12,7 @@
       <draw-header :round-info="roundInfo" @resort="updateSorting"
                    :sort-key="sortKey" :sort-order="sortOrder">
 
-        <div slot="himportance" class="thead flex-cell flex-6 vue-sortable"
+        <div slot="himportance" class="thead flex-cell flex-9 vue-sortable"
              @click="updateSorting('importance')" data-toggle="tooltip"
              title="The debate's priority. Higher priorities will be allocated
               better adjudicators during auto-allocation." >
@@ -24,8 +24,18 @@
           </div>
         </div>
 
-        <template slot="hvenue">
-          <span></span> <!-- Hide Venues -->
+        <template slot="hvenue"><span></span><!-- Hide Venues --></template>
+
+        <template slot="hteams">
+          <div class="vue-sortable thead flex-cell flex-6 flex-horizontal-center"
+               @click="resort(roundInfo.teamPositions[0])">
+            <div class="d-flex align-items-end">
+              <i data-feather="box" class="header-icon tooltip-trigger"></i>
+              <div :class="sortClasses(roundInfo.teamPositions[0])">
+                <i data-feather="chevrons-down"></i><i data-feather="chevrons-up"></i>
+              </div>
+            </div>
+          </div>
         </template>
 
         <template slot="hpanel">
@@ -40,7 +50,7 @@
                :class="['thead flex-cell text-center',
                         'flex-' + (adjPositions.length > 2 ? 17: 16)]">
             <div class="d-flex align-items-end">
-              <span>Panel</span>
+              <span>Panellists</span>
             </div>
           </div>
           <div v-if="adjPositions.indexOf('T') !== -1"
@@ -58,12 +68,18 @@
               :debate="debate"
               :key="debate.id" :round-info="roundInfo">
 
-        <div class="draw-cell flex-6" slot="simportance">
+        <div class="draw-cell flex-9" slot="simportance">
           <debate-importance :id="debate.id" :importance="debate.importance"></debate-importance>
         </div>
 
         <template slot="svenue">
           <span></span> <!-- Hide Venues -->
+        </template>
+
+        <template :slot="'s-' + roundInfo.teamPositions[0]">
+          <div class="draw-cell flex-6 draw-team-cell">
+            Panel {{ debate.id }}
+          </div>
         </template>
 
         <template slot="spanel">

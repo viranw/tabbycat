@@ -130,9 +130,9 @@ class PreformedPanel(models.Model):
 
         panel = {'id': self.id, 'importance': self.importance}
         panel['debateAdjudicators'] = [{
-            # 'position': position,
+            'position': panellist.type,
             'adjudicator': panellist.adjudicator.serialize(round=round),
-        } for panellist, position in self.panel]
+        } for panellist in self.preformedpaneladjudicator_set.all()]
         return panel
 
 

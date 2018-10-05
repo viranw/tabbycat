@@ -214,17 +214,34 @@ class EditPreformedPanelsView(AdjudicatorAllocationMixin, TemplateView):
     page_emoji = '📦'
     template_name = 'edit_panels.html'
 
+    def get_or_create_panels(self):
+        """ For now at least I'm going to assume the number of preformed panels
+        should match the maximum possible number of debates. These should be
+        automatically created so they are in-place on load"""
+        t = self.tournament
+        teams_count = t.team_set.count()
+        if t.pref('teams_in_debate') == 'bp':
+            debates_count = teams_count // 4
+        else:
+            debates_count = teams_count // 2
+
+        panels = list(PreformedPanel.objects.all())
+
+        new_panels_count = debates_count - len(panels)
+        if new_panels_count > 0:
+            new_panels = [PreformedPanel(round=self.round)] * new_panels_count
+            PreformedPanel.objects.bulk_create(new_panels)
+            panels.extend(new_panels)
+
+        serialized_panels = [p.serialize(t) for p in panels]
+        return json.dumps(serialized_panels)
+
     def get_unused_adjudicators(self, r):
         active_adjs = r.active_adjudicators.select_related('institution__region')
         return active_adjs.exclude(preformedpaneladjudicator__panel__round=r)
 
     def get_context_data(self, **kwargs):
-        t = self.tournament
-
-        panels = PreformedPanel.objects.all()
-        serialized_panels = [p.serialize(t) for p in panels]
-        kwargs['vuePreformedPanels'] = serialized_panels
-
+        kwargs['vuePreformedPanels'] = self.get_or_create_panels()
         kwargs['vueUnusedAdjudicators'] = self.get_unallocated_adjudicators()
         return super().get_context_data(**kwargs)
 
