@@ -112,7 +112,7 @@ import percentile from 'stats-percentile'
 
 import DrawContainerMixin from '../../draw/templates/DrawContainerMixin.vue'
 import AdjudicatorMovingMixin from '../../templates/ajax/AdjudicatorMovingMixin.vue'
-import AutoImportanceLogicMixin from '../../templates/allocations/AutoImportanceLogicMixin.vue'
+import AutoImportanceLogicMixin from './AutoImportanceLogicMixin.vue'
 import HighlightContainerMixin from '../../templates/allocations/HighlightContainerMixin.vue'
 import EditAdjudicatorsActions from './EditAdjudicatorsActions.vue'
 import AllocationIntroModal from '../../templates/allocations/AllocationIntroModal.vue'
@@ -120,10 +120,13 @@ import DebateImportance from '../../templates/allocations/DebateImportance.vue'
 import DebatePanel from '../../templates/allocations/DebatePanel.vue'
 import DraggableAdjudicator from '../../templates/draganddrops/DraggableAdjudicator.vue'
 import AjaxMixin from '../../templates/ajax/AjaxMixin.vue'
+import WebSocketMixin from '../../templates/ajax/WebSocketMixin.vue'
 
 export default {
-  mixins: [AjaxMixin, AdjudicatorMovingMixin, DrawContainerMixin,
-    AutoImportanceLogicMixin, HighlightContainerMixin],
+  mixins: [
+    AjaxMixin, AdjudicatorMovingMixin, DrawContainerMixin, AutoImportanceLogicMixin,
+    HighlightContainerMixin, WebSocketMixin,
+  ],
   components: {
     EditAdjudicatorsActions,
     AllocationIntroModal,
@@ -134,6 +137,7 @@ export default {
   data: function () {
     return {
       unallocatedSortOrder: null,
+      sockets: ['debates'],
     }
   },
   props: { showIntroModal: Boolean },

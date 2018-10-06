@@ -44,6 +44,12 @@ export default {
     this.$eventHub.$on('update-unallocated', this.updateUnallocatedItems)
   },
   computed: {
+    tournamentSlugForWSPath: function () {
+      return this.roundInfo.tournamentSlug
+    },
+    roundSlugForWSPath: function () {
+      return this.roundInfo.roundSeq
+    },
     sortableData: function () {
       return this.debatesWithSharding // Enables SortableTableMixin
     },

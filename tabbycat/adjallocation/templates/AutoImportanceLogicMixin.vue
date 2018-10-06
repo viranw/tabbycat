@@ -67,14 +67,13 @@ export default {
       const debateImportances = _.map(this.debates, 'importance')
       this.updateImportance(debateIDs, debateImportances)
     },
-    updateImportance: function (debateIDs, importances) {
-      const payload = { priorities: {} }
-      for (let i = 0; i < debateIDs.length; i += 1) {
-        payload.priorities[debateIDs[i]] = importances[i]
+    updateImportance: function (debateOrPanelIDs, importances) {
+      let payload = { debatesOrPanels: [] }
+      for (let i = 0; i < debateOrPanelIDs.length; i += 1) {
+        const debateOrPanel = { 'test': { 'importance': importances[i] } }
+        payload.debatesOrPanels.push(debateOrPanel)
       }
-      const url = this.roundInfo.updateImportanceURL
-      const message = `debate IDs ${debateIDs}'s importance`
-      this.ajaxSave(url, payload, message, this.processImportanceSaveSuccess, null, null)
+      this.sendToSocket(this.sockets[0], payload)
     },
     processImportanceSaveSuccess: function (dataResponse) {
       const self = this

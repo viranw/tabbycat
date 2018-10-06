@@ -128,7 +128,7 @@ import percentile from 'stats-percentile'
 
 import DrawContainerMixin from '../../draw/templates/DrawContainerMixin.vue'
 import AdjudicatorMovingMixin from '../../templates/ajax/AdjudicatorMovingMixin.vue'
-import AutoImportanceLogicMixin from '../../templates/allocations/AutoImportanceLogicMixin.vue'
+import AutoImportanceLogicMixin from './AutoImportanceLogicMixin.vue'
 import HighlightContainerMixin from '../../templates/allocations/HighlightContainerMixin.vue'
 import EditPanelsActions from './EditPanelsActions.vue'
 import AllocationIntroModal from '../../templates/allocations/AllocationIntroModal.vue'
@@ -136,10 +136,13 @@ import DebateImportance from '../../templates/allocations/DebateImportance.vue'
 import DebatePanel from '../../templates/allocations/DebatePanel.vue'
 import DraggableAdjudicator from '../../templates/draganddrops/DraggableAdjudicator.vue'
 import AjaxMixin from '../../templates/ajax/AjaxMixin.vue'
+import WebSocketMixin from '../../templates/ajax/WebSocketMixin.vue'
 
 export default {
-  mixins: [AjaxMixin, AdjudicatorMovingMixin, DrawContainerMixin,
-    AutoImportanceLogicMixin, HighlightContainerMixin],
+  mixins: [
+    AjaxMixin, AdjudicatorMovingMixin, DrawContainerMixin,
+    AutoImportanceLogicMixin, HighlightContainerMixin, WebSocketMixin,
+  ],
   components: {
     EditPanelsActions,
     AllocationIntroModal,
@@ -150,6 +153,7 @@ export default {
   data: function () {
     return {
       unallocatedSortOrder: null,
+      sockets: ['panels'],
     }
   },
   props: { showIntroModal: Boolean },
@@ -158,6 +162,12 @@ export default {
     this.$eventHub.$on('show-conflicts-for', this.setOrUnsetConflicts)
   },
   computed: {
+    tournamentSlugForWSPath: function () {
+      return this.roundInfo.tournamentSlug // Allow for alternate provision of info
+    },
+    roundSlugForWSPath: function () {
+      return this.roundInfo.roundSeq // Allow for alternate provision of info
+    },
     unallocatedAdjsByOrder: function () {
       if ((this.unallocatedSortOrder === null && this.roundInfo.roundIsPrelim === true) ||
            this.unallocatedSortOrder === 'score') {

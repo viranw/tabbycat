@@ -4,6 +4,7 @@ from channels.routing import ChannelNameRouter, ProtocolTypeRouter, URLRouter
 from channels.auth import AuthMiddlewareStack
 
 from actionlog.consumers import ActionLogEntryConsumer
+from adjallocation.consumers import DebateEditConsumer, PanelEditConsumer
 from checkins.consumers import CheckInEventConsumer
 from notifications.consumers import NotificationQueueConsumer
 from results.consumers import BallotResultConsumer, BallotStatusConsumer
@@ -26,6 +27,9 @@ application = ProtocolTypeRouter({
             url(r'^ws/(?P<tournament_slug>[-\w_]+)/ballot_statuses/$', BallotStatusConsumer),
             # CheckInStatusContainer
             url(r'^ws/(?P<tournament_slug>[-\w_]+)/checkins/$', CheckInEventConsumer),
+            # Draw and Preformed Panel Edits
+            url(r'^ws/(?P<tournament_slug>[-\w_]+)/round/(?P<round_seq>[-\w_]+)/debates/$', DebateEditConsumer),
+            url(r'^ws/(?P<tournament_slug>[-\w_]+)/round/(?P<round_seq>[-\w_]+)/panels/$', PanelEditConsumer),
         ])
     ),
 

@@ -158,8 +158,12 @@ export default {
     initialEvents: Array,
     assistantUrl: String,
     teamCodes: Boolean,
+    tournamentSlug: String,
   },
   computed: {
+    tournamentSlugForWSPath: function () {
+      return this.tournamentSlug
+    },
     statsAbsent: function () {
       return 0
     },

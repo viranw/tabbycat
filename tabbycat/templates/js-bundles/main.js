@@ -253,7 +253,7 @@ if (typeof vueData !== 'undefined') {
   if ('tablesData' in vueData && vueData.tablesData === null) {
     // Is an empty table; do not mount
   } else {
-    new Vue({
+    new Vue({ // eslint-disable-line no-new
       el: '#vueMount',
       components: vueComponents,
       data: vueData,

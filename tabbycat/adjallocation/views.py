@@ -218,14 +218,13 @@ class EditPreformedPanelsView(AdjudicatorAllocationMixin, TemplateView):
         """ For now at least I'm going to assume the number of preformed panels
         should match the maximum possible number of debates. These should be
         automatically created so they are in-place on load"""
-        t = self.tournament
-        teams_count = t.team_set.count()
-        if t.pref('teams_in_debate') == 'bp':
+        teams_count = self.tournament.team_set.count()
+        if self.tournament.pref('teams_in_debate') == 'bp':
             debates_count = teams_count // 4
         else:
             debates_count = teams_count // 2
 
-        panels = list(PreformedPanel.objects.all())
+        panels = list(PreformedPanel.objects.filter(round=self.round))
 
         new_panels_count = debates_count - len(panels)
         if new_panels_count > 0:
@@ -233,7 +232,7 @@ class EditPreformedPanelsView(AdjudicatorAllocationMixin, TemplateView):
             PreformedPanel.objects.bulk_create(new_panels)
             panels.extend(new_panels)
 
-        serialized_panels = [p.serialize(t) for p in panels]
+        serialized_panels = [p.serialize(self.tournament) for p in panels]
         return json.dumps(serialized_panels)
 
     def get_unused_adjudicators(self, r):
