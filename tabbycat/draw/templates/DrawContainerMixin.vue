@@ -30,7 +30,7 @@ export default {
       unallocatedItems: this.initialUnallocatedItems,
       headers: [
         { key: 'bracket' }, { key: 'liveness' }, { key: 'importance' },
-        { key: 'venue' }, { key: 'aff' }, { key: 'neg' },
+        { key: 'venue' }, { key: 'aff' }, { key: 'neg' }, { key: 'id' },
         { key: 'og' }, { key: 'oo' }, { key: 'cg' }, { key: 'co' },
       ],
     }
@@ -137,7 +137,7 @@ export default {
         }
         return '' // Teams in a position can be null
       }
-      console.error('Couldnt find sorting property')
+      console.error('Couldnt find sorting property', key)
       return '' // Teams in a position can be null
     },
   },

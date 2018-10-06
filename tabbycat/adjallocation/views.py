@@ -72,6 +72,32 @@ class AdjudicatorAllocationMixin(DrawForDragAndDropMixin, AdministratorMixin):
 
         return json.dumps(unused_adjs)
 
+    def get_regions_info(self):
+        # Need to extract and annotate regions for the allcoation actions key
+        all_regions = [r.serialize for r in Region.objects.order_by('id')]
+        for i, r in enumerate(all_regions):
+            r['class'] = i
+        return all_regions
+
+    def get_categories_info(self):
+        # Need to extract and annotate categories for the allcoation actions key
+        all_bcs = [c.serialize for c in BreakCategory.objects.filter(
+            tournament=self.tournament).order_by('id')]
+        for i, bc in enumerate(all_bcs):
+            bc['class'] = i
+        return all_bcs
+
+    def get_round_info(self):
+        round_info = super().get_round_info()
+        round_info['updateImportanceURL'] = reverse_round('adjallocation-save-debate-importance', self.round)
+        round_info['scoreMin'] = self.tournament.pref('adj_min_score')
+        round_info['scoreMax'] = self.tournament.pref('adj_max_score')
+        round_info['scoreForVote'] = self.tournament.pref('adj_min_voting_score')
+        round_info['allowDuplicateAllocations'] = self.tournament.pref('duplicate_adjs')
+        round_info['regions'] = self.get_regions_info()
+        round_info['categories'] = self.get_categories_info()
+        return round_info
+
     def annotate_draw(self, draw, serialised_draw):
         # Need to unique-ify/reorder break categories/regions for consistent CSS
 
@@ -95,34 +121,8 @@ class EditAdjudicatorAllocationView(AdjudicatorAllocationMixin, TemplateView):
     auto_url = "adjallocation-auto-allocate"
     save_url = "adjallocation-save-debate-panel"
 
-    def get_regions_info(self):
-        # Need to extract and annotate regions for the allcoation actions key
-        all_regions = [r.serialize for r in Region.objects.order_by('id')]
-        for i, r in enumerate(all_regions):
-            r['class'] = i
-        return all_regions
-
-    def get_categories_info(self):
-        # Need to extract and annotate categories for the allcoation actions key
-        all_bcs = [c.serialize for c in BreakCategory.objects.filter(
-            tournament=self.tournament).order_by('id')]
-        for i, bc in enumerate(all_bcs):
-            bc['class'] = i
-        return all_bcs
-
     def get_unused_adjudicators(self, r):
         return r.unused_adjudicators().select_related('institution__region')
-
-    def get_round_info(self):
-        round_info = super().get_round_info()
-        round_info['updateImportanceURL'] = reverse_round('adjallocation-save-debate-importance', self.round)
-        round_info['scoreMin'] = self.tournament.pref('adj_min_score')
-        round_info['scoreMax'] = self.tournament.pref('adj_max_score')
-        round_info['scoreForVote'] = self.tournament.pref('adj_min_voting_score')
-        round_info['allowDuplicateAllocations'] = self.tournament.pref('duplicate_adjs')
-        round_info['regions'] = self.get_regions_info()
-        round_info['categories'] = self.get_categories_info()
-        return round_info
 
     def get_context_data(self, **kwargs):
         kwargs['vueUnusedAdjudicators'] = self.get_unallocated_adjudicators()
