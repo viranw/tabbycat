@@ -176,6 +176,15 @@ export default {
     },
   },
   methods: {
+    handleSocketReceive (socketLabel, payload) {
+      // Receive debate objects with a list of attributes from the websocket
+      // Loop over keys received and set their reactive properties on the local objects
+      Object.entries(payload).forEach(([debateOrPanelId, debateOrPanelChanges]) => {
+        Object.entries(debateOrPanelChanges).forEach(([attribute, value]) => {
+          this.debatesById[debateOrPanelId][attribute] = value
+        })
+      })
+    },
     updateUnallocatedSorting (sortType) {
       this.unallocatedSortOrder = sortType
     },

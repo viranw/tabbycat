@@ -70,7 +70,7 @@ export default {
     },
     // Passes to inheriting components; receives a payload from a socket
     receiveFromSocket: function (socketLabel, payload) {
-      // console.log(`Received payload ${JSON.stringify(payload)} from socket ${socketLabel}`)
+      console.log(`Received payload ${JSON.stringify(payload)} from socket ${socketLabel}`)
       if (Object.prototype.hasOwnProperty.call(payload, 'error')) {
         if (payload.component_id === this.componentId) {
           this.showErrorAlert(payload.error, payload.message, null)

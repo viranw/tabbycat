@@ -68,10 +68,9 @@ export default {
       this.updateImportance(debateIDs, debateImportances)
     },
     updateImportance: function (debateOrPanelIDs, importances) {
-      let payload = { debatesOrPanels: [] }
+      let payload = { debatesOrPanels: {} }
       for (let i = 0; i < debateOrPanelIDs.length; i += 1) {
-        const debateOrPanel = { 'test': { 'importance': importances[i] } }
-        payload.debatesOrPanels.push(debateOrPanel)
+        payload.debatesOrPanels[debateOrPanelIDs[i]] = { 'importance': importances[i] }
       }
       this.sendToSocket(this.sockets[0], payload)
     },
