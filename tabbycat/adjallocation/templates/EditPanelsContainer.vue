@@ -12,7 +12,7 @@
       <draw-header :round-info="roundInfo" @resort="updateSorting"
                    :sort-key="sortKey" :sort-order="sortOrder">
 
-        <div slot="himportance" class="thead flex-cell flex-9 vue-sortable"
+        <div slot="himportance" class="thead flex-cell flex-6 vue-sortable"
              @click="updateSorting('importance')" data-toggle="tooltip"
              title="The debate's priority. Higher priorities will be allocated
               better adjudicators during auto-allocation." >
@@ -27,8 +27,7 @@
         <template slot="hvenue"><span></span><!-- Hide Venues --></template>
 
         <template slot="hteams">
-          <div class="vue-sortable thead flex-cell flex-6 flex-horizontal-center"
-               @click="resort('id')">
+          <div class="vue-sortable thead flex-cell flex-6" @click="updateSorting('id')">
             <div class="d-flex align-items-end">
               <i data-feather="box" class="header-icon tooltip-trigger"></i>
               <div :class="sortClasses('id')">
@@ -68,18 +67,19 @@
               :debate="debate"
               :key="debate.id" :round-info="roundInfo">
 
-        <div class="draw-cell flex-9" slot="simportance">
+        <div class="draw-cell flex-6" slot="simportance">
           <debate-importance :id="debate.id" :importance="debate.importance"></debate-importance>
         </div>
 
-        <template slot="svenue">
-          <span></span> <!-- Hide Venues -->
-        </template>
+        <template slot="svenue"><span></span><!-- Hide Venues --></template>
 
-        <template :slot="'s-' + roundInfo.teamPositions[0]">
-          <div class="draw-cell flex-6 draw-team-cell">
-            Panel {{ debate.id }}
-          </div>
+        <template v-for="(position, index) in roundInfo.teamPositions">
+          <template :slot="'s-' + position">
+            <div class="draw-cell flex-6 draw-team-cell" v-if="index === 0">
+              Panel {{ debate.id }}
+            </div>
+            <span v-if="index !== 0"></span>
+          </template>
         </template>
 
         <template slot="spanel">

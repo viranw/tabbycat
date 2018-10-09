@@ -233,6 +233,13 @@ class EditPreformedPanelsView(AdjudicatorAllocationMixin, TemplateView):
             panels.extend(new_panels)
 
         serialized_panels = [p.serialize(self.tournament) for p in panels]
+
+        adj_conflicts = self.conflicts_and_history[1]
+        for panel in serialized_panels:
+            for da in panel['debateAdjudicators']:
+                da['adjudicator']['conflicts'] = adj_conflicts[da['adjudicator']['id']]
+                self.annotate_region_classes(da['adjudicator'])
+
         return json.dumps(serialized_panels)
 
     def get_unused_adjudicators(self, r):
