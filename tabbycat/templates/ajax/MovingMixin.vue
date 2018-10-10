@@ -1,9 +1,10 @@
 <script>
 import _ from 'lodash'
 import AjaxMixin from '../ajax/AjaxMixin.vue'
+import WebSocketMixin from '../ajax/WebSocketMixin.vue'
 
 export default {
-  mixins: [AjaxMixin],
+  mixins: [AjaxMixin, WebSocketMixin],
   methods: {
     niceNameForDebate: function (debateId) {
       if (debateId === 'unused') {
@@ -66,10 +67,8 @@ export default {
         possibleItemsToLock[item.id].locked = lockStatus
       }
     },
-    postModifiedDebates (
-      debatesToSave, addToUnused, removeFromUnused,
-      reallocateToPanel, messageStart
-    ) {
+    postModifiedDebates (debatesToSave, addToUnused, removeFromUnused, reallocateToPanel,
+      messageStart) {
       const self = this
       // Lock the debate and unused items to prevent edits
       _.forEach(debatesToSave, (debateToSave) => {
@@ -78,19 +77,31 @@ export default {
       _.forEach(removeFromUnused, (itemToUse) => {
         self.setLocked(itemToUse, self.unallocatedById, true)
       })
-      // Issue an AJAX request for each debate
-      _.forEach(debatesToSave, (debateToSave) => {
-        const message = messageStart + self.niceNameForDebate(debateToSave.id)
-        self.ajaxSave(
-          self.roundInfo.saveUrl, debateToSave, message,
-          self.processSaveSuccess, self.processSaveFailure,
-          {
-            addToUnused: addToUnused,
-            removeFromUnused: removeFromUnused,
-            reallocateToPanel: reallocateToPanel,
+      if (this.shouldUseAjax) {
+        // Issue an AJAX request for each debate
+        _.forEach(debatesToSave, (debateToSave) => {
+          const message = messageStart + self.niceNameForDebate(debateToSave.id)
+          self.ajaxSave(
+            self.roundInfo.saveUrl, debateToSave, message,
+            self.processSaveSuccess, self.processSaveFailure,
+            {
+              addToUnused: addToUnused,
+              removeFromUnused: removeFromUnused,
+              reallocateToPanel: reallocateToPanel,
+            }
+          )
+        })
+      } else {
+        // Issue an Websocket for all debates
+        let sentPayload = { debatesOrPanels: {} }
+        _.forEach(debatesToSave, (debateToSave) => {
+          sentPayload.debatesOrPanels[debateToSave.id] = {
+            'adjudicators': debateToSave.debateAdjudicators,
           }
-        )
-      })
+        })
+        this.sendToSocket(this.sockets[0], sentPayload)
+        // TODO: how to handle the return value
+      }
     },
     processSaveSuccess: function (dataResponse, savedDebate, returnPayload) {
       // Replace old debate object with new one

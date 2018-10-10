@@ -132,6 +132,7 @@ export default {
   data: function () {
     return {
       sockets: ['panels'],
+      shouldUseAjax: false,
     }
   },
 }

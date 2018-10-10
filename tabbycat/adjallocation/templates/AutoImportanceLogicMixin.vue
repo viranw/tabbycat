@@ -1,7 +1,10 @@
 <script>
 import _ from 'lodash'
 
+import WebSocketMixin from '../../templates/ajax/WebSocketMixin.vue'
+
 export default {
+  mixins: [WebSocketMixin],
   // Designed to be applied to a Panel component as a bridge between
   // acting across the entire adj/team pool (for hovers) and instead only
   // focusing it on conflicts within a debate panel / debate teams

@@ -68,13 +68,66 @@ export default {
     },
   },
   methods: {
+    moveToDebate (payload, assignedId, assignedPosition) {
+      if (payload.debate === assignedId) {
+        // Check that it isn't an in-panel move
+        const thisDebate = this.debatesById[payload.debate]
+        const debateAdjs = thisDebate.debateAdjudicators
+        const fromPanellist = _.find(debateAdjs, da => da.adjudicator.id === payload.adjudicator)
+        if (assignedPosition === fromPanellist.position) {
+          return // Moving to same debate/position; do nothing
+        }
+      }
+      this.saveMove(payload.adjudicator, payload.debate, assignedId, assignedPosition)
+    },
+    moveToUnused (payload) {
+      if (_.isUndefined(payload.debate)) {
+        return // Moving to unused from unused; do nothing
+      }
+      this.saveMove(payload.adjudicator, payload.debate)
+    },
     handleSocketReceive (socketLabel, payload) {
+      console.log('handleSocketReceive', payload)
       // Receive debate objects with a list of attributes from the websocket
+
+      let removedAdjudicators = []
+
       // Loop over keys received and set their reactive properties on the local objects
       Object.entries(payload).forEach(([debateOrPanelId, debateOrPanelChanges]) => {
         Object.entries(debateOrPanelChanges).forEach(([attribute, value]) => {
-          this.debatesById[debateOrPanelId][attribute] = value
+          let debate = this.debatesById[debateOrPanelId]
+          if (attribute === 'adjudicators') {
+            debate.debateAdjudicators.forEach((debateAdjudicator) => {
+              removedAdjudicators.push(debateAdjudicator.adjudicator)
+            })
+            debate.debateAdjudicators = value
+            // See if the new debate adjudicators include any of the old adjudicators
+            debate.debateAdjudicators.forEach((newDebateAdjudicator) => {
+              // Remove them from the removed list if so
+              let index
+              index = removedAdjudicators.findIndex((removedAdj) => {
+                return removedAdj.id === newDebateAdjudicator.adjudicator.id
+              })
+              if (index !== -1) {
+                removedAdjudicators.splice(index, 1)
+              }
+              // Remove them from the unallocated list
+              index = this.unallocatedItems.findIndex((unallocatedAdj) => {
+                return unallocatedAdj.id === newDebateAdjudicator.adjudicator.id
+              })
+              if (index !== -1) {
+                this.unallocatedItems.splice(index, 1)
+              }
+            })
+          } else {
+            debate[attribute] = value
+          }
+          debate.locked = false
         })
+      })
+      // Now need to loop through all the returned debates
+      removedAdjudicators.forEach((removedAdjudicator) => {
+        this.unallocatedItems.push(removedAdjudicator)
       })
     },
     updateUnallocatedSorting (sortType) {

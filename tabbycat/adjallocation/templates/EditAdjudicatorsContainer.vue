@@ -116,6 +116,7 @@ export default {
   data: function () {
     return {
       sockets: ['debates'],
+      shouldUseAjax: true,
     }
   },
 }
