@@ -5,9 +5,6 @@ import unicodedata
 from itertools import product
 from math import floor
 
-from asgiref.sync import async_to_sync
-from channels.layers import get_channel_layer
-
 from django.conf import settings
 from django.contrib import messages
 from django.http import HttpResponseBadRequest, HttpResponseRedirect
@@ -24,6 +21,8 @@ from adjallocation.models import DebateAdjudicator
 from adjallocation.utils import adjudicator_conflicts_display
 from availability.utils import annotate_availability
 from divisions.models import Division
+from notifications.models import SentMessageRecord
+from notifications.views import RoundTemplateEmailCreateView
 from options.preferences import BPPositionCost
 from participants.models import Adjudicator, Institution, Team
 from participants.prefetch import populate_win_counts
@@ -383,6 +382,20 @@ class AssistantDrawDisplayView(CurrentRoundMixin, OptionalAssistantTournamentPag
     assistant_page_permissions = ['all_areas', 'results_draw']
 
 
+class EmailAdjudicatorAssignmentsView(RoundTemplateEmailCreateView):
+    page_subtitle = _("Adjudicator Assignments")
+
+    event = SentMessageRecord.EVENT_TYPE_DRAW
+    subject_template = 'adj_email_subject'
+    message_template = 'adj_email_message'
+
+    def get_success_url(self):
+        return reverse_round('draw-display', self.round)
+
+    def get_queryset(self):
+        return self.round.active_adjudicators
+
+
 # ==============================================================================
 # Draw Creation (Admin)
 # ==============================================================================
@@ -688,19 +701,7 @@ class DrawReleaseView(DrawStatusEdit):
         self.round.save()
         self.log_action()
 
-        success_message = _("Released the draw.")
-        if self.tournament.pref('enable_adj_email'):
-            path = reverse_tournament('privateurls-person-index', self.tournament, kwargs={'url_key': '0'})
-            url = request.build_absolute_uri(path)[:-2]
-            async_to_sync(get_channel_layer().send)("notifications", {
-                "type": "email",
-                "message": "adj",
-                "extra": {'url': url, 'round_id': self.round.id}
-            })
-
-            success_message += _(" Adjudicator emails queued to be sent.")
-
-        messages.success(request, success_message)
+        messages.success(request, _("Released the draw."))
         return super().post(request, *args, **kwargs)
 
 
