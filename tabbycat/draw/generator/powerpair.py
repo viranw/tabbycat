@@ -111,6 +111,7 @@ class PowerPairedDrawGenerator(BasePairDrawGenerator):
     PULLUP_ELIGIBILITY_FILTERS = {
         "none"         : "_pullup_filter_none",
         "least_to_date": "_pullup_filter_least_to_date",
+        "australs"     : "_pullup_filter_australs",
     }
 
     def _pullup_filter(self, teams):
@@ -125,6 +126,23 @@ class PowerPairedDrawGenerator(BasePairDrawGenerator):
     def _pullup_filter_least_to_date(self, teams):
         fewest = min(team.npullups for team in teams)
         return [team for team in teams if team.npullups == fewest]
+    
+    def _pullup_filter_australs(self, teams):
+        depth = floor(0.25*len(teams)) if floor(0.25*len(teams))>2 else 2
+        subbracket = teams[:depth]
+
+        floor = min(team.npullups for team in teams)
+        floor_teams = [team for team in subbracket if team.npullups == floor]
+
+        if len(floor_teams) == 0:
+            raise DrawFatalError("Pullup floor is not correctly defined!")
+        else:
+            return floor_teams
+
+        
+
+
+    
 
     # Odd bracket resolutions
 
