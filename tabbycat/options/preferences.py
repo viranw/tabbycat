@@ -242,6 +242,7 @@ class DrawPullupRestriction(ChoicePreference):
     choices = (
         ('none', _("No restriction")),
         ('least_to_date', _("Choose from teams who have been pulled up the fewest times so far")),
+        ('australs', _("Australs"))
     )
     default = 'none'
 

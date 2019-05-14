@@ -184,7 +184,7 @@ class PowerPairedDrawManager(BaseDrawManager):
     def get_teams(self):
         """Get teams in ranked order."""
         teams = super().get_teams()
-        if self.round.tournament.pref('draw_pullup_restriction') == 'least_to_date':
+        if self.round.tournament.pref('draw_pullup_restriction') == 'least_to_date' or self.round.tournament.pref('draw_pullup_restriction') == 'australs':
             annotate_npullups(teams, self.round.prev)
 
         metrics = self.round.tournament.pref('team_standings_precedence')
